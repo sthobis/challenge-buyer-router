@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "node test/index.js && standard"
   },
   "keywords": [],
@@ -16,7 +18,17 @@
     "tape": "^4.6.3"
   },
   "dependencies": {
-    "redis": "2.7.1"
+    "body": "^5.1.0",
+    "corsify": "^2.1.0",
+    "cuid": "^1.3.8",
+    "http": "0.0.0",
+    "http-hash-router": "^1.1.0",
+    "nodemon": "^1.12.1",
+    "productionize": "^4.0.0",
+    "redis": "2.7.1",
+    "req-logger": "^2.0.0",
+    "send-data": "^8.0.0",
+    "url": "^0.11.0"
   },
   "directories": {
     "test": "test"
