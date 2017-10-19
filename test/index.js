@@ -57,7 +57,7 @@ tape('should route traffic', function (t) {
   var requests = [
     {timestamp: '2017-03-12T10:30:00.000Z', state: 'NV', device: 'mobile'},
     {timestamp: '2017-03-12T01:30:00.000Z', state: 'CA', device: 'desktop'},
-    {timestamp: '2017-03-12T03:30:00.000Z', state: 'CA', device: 'desktop'}
+    {timestamp: '2017-03-12T03:30:00.000Z', state: 'FL', device: 'desktop'}
   ]
 
   var expected = [
