@@ -45,9 +45,12 @@ function route (req, res, opts, cb) {
 
         asyncCallsLeft--
         buyer.offers.forEach(function (offer) {
+          var timestamp = new Date(opts.query.timestamp)
           if (
             offer.criteria.device.includes(opts.query.device) &&
             offer.criteria.state.includes(opts.query.state) &&
+            offer.criteria.hour.includes(timestamp.getUTCHours()) &&
+            offer.criteria.day.includes(timestamp.getUTCDay()) &&
             parseInt(offer.value) > currentHighestValue
           ) {
             currentHighestValue = offer.value
