@@ -32,40 +32,47 @@ function post (req, res, opts, cb) {
 }
 
 function route (req, res, opts, cb) {
-  Buyers.getAll(function (err, buyersId) {
-    if (err) return cb(err)
+  var timestamp = new Date(opts.query.timestamp)
+  var criteria = {
+    device: opts.query.device,
+    hour: timestamp.getUTCHours(),
+    day: timestamp.getUTCDay(),
+    state: opts.query.state
+  }
 
-    var currentHighestValue = 0
+  Buyers.getOffers(criteria, function (err, offers) {
+    if (err) cb(err)
+
+    var highestValue = 0
     var location = ''
-    var asyncCallsLeft = buyersId.length
-
-    buyersId.forEach(function (buyerId) {
+    var asyncCallsLeft = 0
+    offers.forEach(function (offer) {
+      var buyerId = offer.substring(0, 1)
+      var offerIndex = parseInt(offer.substring(2, 3))
+      asyncCallsLeft++
       Buyers.get(buyerId, function (err, buyer) {
-        if (err) return cb(err)
+        if (err) cb(err)
 
-        asyncCallsLeft--
-        buyer.offers.forEach(function (offer) {
-          var timestamp = new Date(opts.query.timestamp)
-          if (
-            offer.criteria.device.includes(opts.query.device) &&
-            offer.criteria.state.includes(opts.query.state) &&
-            offer.criteria.hour.includes(timestamp.getUTCHours()) &&
-            offer.criteria.day.includes(timestamp.getUTCDay()) &&
-            parseInt(offer.value) > currentHighestValue
-          ) {
-            currentHighestValue = offer.value
-            location = offer.location
-          }
-        })
-        if (asyncCallsLeft === 0) {
-          if (location !== '') res.statusCode = 302
-          send(req, res, {
-            headers: {
-              location: location
-            }
-          })
+        if (buyer.offers[offerIndex].value > highestValue) {
+          highestValue = buyer.offers[offerIndex].value
+          location = buyer.offers[offerIndex].location
         }
+        asyncCallsLeft--
       })
     })
+
+    var waitForOffers = function () {
+      if (asyncCallsLeft > 0) {
+        setTimeout(waitForOffers, 0)
+      } else {
+        if (location !== '') res.statusCode = 302
+        send(req, res, {
+          headers: {
+            location: location
+          }
+        })
+      }
+    }
+    waitForOffers()
   })
 }
